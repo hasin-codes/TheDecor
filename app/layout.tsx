@@ -3,6 +3,7 @@ import { Manrope, Space_Grotesk, Space_Mono } from "next/font/google";
 import "./globals.css";
 import { HeaderWrapper } from "@/components/navbar";
 import { ZoomBlocker } from "@/components/ui/ZoomBlocker";
+import { ClientLayout } from "./ClientLayout";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -44,7 +45,10 @@ export default function RootLayout({
       >
         <ZoomBlocker />
         <HeaderWrapper />
-        {children}
+
+        <ClientLayout>
+          {children}
+        </ClientLayout>
       </body>
     </html>
   );
