@@ -1,17 +1,12 @@
 'use client';
 
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import { ArrowRight } from 'lucide-react';
 
-if (typeof window !== 'undefined') {
-    gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
-}
-
-const useIsomorphicLayoutEffect =
-    typeof window !== 'undefined' ? useLayoutEffect : useEffect;
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
 export const AboutSection: React.FC = () => {
     const sectionRef = useRef<HTMLDivElement>(null);
@@ -34,47 +29,27 @@ export const AboutSection: React.FC = () => {
     const isPinnedRef = useRef(false);
     const hasCompletedRef = useRef(false);
     const shuttersOpenRef = useRef(false);
-    const reverseIntervalRef = useRef<NodeJS.Timeout | null>(null);
-    const scrollTweenRef = useRef<gsap.core.Tween | null>(null);
 
-    useIsomorphicLayoutEffect(() => {
-        if (typeof window === 'undefined') return;
+    useEffect(() => {
         if (!sectionRef.current || !videoRef.current) return;
 
         const video = videoRef.current;
         const section = sectionRef.current;
-        let scrollLocker: (() => void) | null = null;
 
-        // ✅ IMPROVED: Better scroll lock using GSAP's approach
+        // Lock scroll during pinned state
         const lockScroll = () => {
-            if (scrollLocker) return;
-
-            const scrollY = window.scrollY;
-            document.body.style.position = 'fixed';
-            document.body.style.top = `-${scrollY}px`;
-            document.body.style.width = '100%';
-            document.body.style.overflowY = 'scroll'; // Prevent layout shift
-
-            scrollLocker = () => {
-                const scrollY = document.body.style.top;
-                document.body.style.position = '';
-                document.body.style.top = '';
-                document.body.style.width = '';
-                document.body.style.overflowY = '';
-                window.scrollTo(0, parseInt(scrollY || '0') * -1);
-            };
+            document.body.style.overflow = 'hidden';
+            document.body.style.touchAction = 'none';
         };
 
         const unlockScroll = () => {
-            if (scrollLocker) {
-                scrollLocker();
-                scrollLocker = null;
-            }
+            document.body.style.overflow = '';
+            document.body.style.touchAction = '';
         };
 
         // Open shutters animation
         const openShutters = () => {
-            if (shuttersOpenRef.current) return null;
+            if (shuttersOpenRef.current) return;
             shuttersOpenRef.current = true;
 
             const tl = gsap.timeline();
@@ -104,7 +79,7 @@ export const AboutSection: React.FC = () => {
 
         // Close shutters animation
         const closeShutters = () => {
-            if (!shuttersOpenRef.current) return null;
+            if (!shuttersOpenRef.current) return;
             shuttersOpenRef.current = false;
 
             const tl = gsap.timeline();
@@ -126,17 +101,8 @@ export const AboutSection: React.FC = () => {
             isPlayingRef.current = true;
             isReversingRef.current = false;
 
-            // ✅ Clear any reverse interval
-            if (reverseIntervalRef.current) {
-                clearInterval(reverseIntervalRef.current);
-                reverseIntervalRef.current = null;
-            }
-
             video.playbackRate = 2.2;
-            video.play().catch(() => {
-                // Handle play() promise rejection
-                isPlayingRef.current = false;
-            });
+            video.play();
         };
 
         // Play video in reverse
@@ -146,44 +112,25 @@ export const AboutSection: React.FC = () => {
             isPlayingRef.current = false;
             video.pause();
 
-            // ✅ Clear existing interval
-            if (reverseIntervalRef.current) {
-                clearInterval(reverseIntervalRef.current);
-            }
-
-            reverseIntervalRef.current = setInterval(() => {
+            const reverseInterval = setInterval(() => {
                 if (video.currentTime <= 0.1) {
-                    if (reverseIntervalRef.current) {
-                        clearInterval(reverseIntervalRef.current);
-                        reverseIntervalRef.current = null;
-                    }
+                    clearInterval(reverseInterval);
                     video.currentTime = 0;
                     isReversingRef.current = false;
 
                     // Close shutters and unpin
-                    const closeTl = closeShutters();
-                    if (closeTl) {
-                        closeTl.eventCallback('onComplete', () => {
-                            isPinnedRef.current = false;
-                            hasCompletedRef.current = false;
-                            unlockScroll();
+                    closeShutters()?.eventCallback('onComplete', () => {
+                        isPinnedRef.current = false;
+                        hasCompletedRef.current = false;
+                        unlockScroll();
 
-                            // ✅ Kill any existing scroll tween
-                            if (scrollTweenRef.current) {
-                                scrollTweenRef.current.kill();
-                            }
-
-                            // Scroll back to section start
-                            scrollTweenRef.current = gsap.to(window, {
-                                scrollTo: { y: section.offsetTop, autoKill: true },
-                                duration: 0.5,
-                                ease: "power2.out",
-                                onComplete: () => {
-                                    scrollTweenRef.current = null;
-                                }
-                            });
+                        // Scroll back to section start
+                        gsap.to(window, {
+                            scrollTo: { y: section.offsetTop, autoKill: false },
+                            duration: 0.5,
+                            ease: "power2.out"
                         });
-                    }
+                    });
                 } else {
                     video.currentTime = Math.max(0, video.currentTime - 0.05);
                 }
@@ -203,18 +150,10 @@ export const AboutSection: React.FC = () => {
 
                 const nextSection = section.nextElementSibling as HTMLElement;
                 if (nextSection) {
-                    // ✅ Kill any existing scroll tween
-                    if (scrollTweenRef.current) {
-                        scrollTweenRef.current.kill();
-                    }
-
-                    scrollTweenRef.current = gsap.to(window, {
-                        scrollTo: { y: nextSection.offsetTop, autoKill: true },
+                    gsap.to(window, {
+                        scrollTo: { y: nextSection.offsetTop, autoKill: false },
                         duration: 1.2,
-                        ease: "power2.inOut",
-                        onComplete: () => {
-                            scrollTweenRef.current = null;
-                        }
+                        ease: "power2.inOut"
                     });
                 }
             }
@@ -222,9 +161,7 @@ export const AboutSection: React.FC = () => {
 
         video.addEventListener('timeupdate', handleTimeUpdate);
 
-        // ✅ IMPROVED: Debounced wheel handler
-        let wheelTimeout: NodeJS.Timeout | null = null;
-
+        // Handle scroll/wheel events
         const handleWheel = (e: WheelEvent) => {
             const rect = section.getBoundingClientRect();
             const isAtSection = rect.top <= 50 && rect.top >= -50;
@@ -234,57 +171,36 @@ export const AboutSection: React.FC = () => {
             // First scroll down at section - pin and start
             if (e.deltaY > 0 && isAtSection && !isPinnedRef.current && !hasCompletedRef.current) {
                 e.preventDefault();
-                e.stopPropagation();
+                isPinnedRef.current = true;
 
-                if (wheelTimeout) clearTimeout(wheelTimeout);
-
-                wheelTimeout = setTimeout(() => {
-                    isPinnedRef.current = true;
-
-                    // ✅ Kill any existing scroll tween
-                    if (scrollTweenRef.current) {
-                        scrollTweenRef.current.kill();
+                // Scroll to section top to hide navbar, then lock
+                gsap.to(window, {
+                    scrollTo: { y: section.offsetTop, autoKill: false },
+                    duration: 0.3,
+                    ease: "power2.out",
+                    onComplete: () => {
+                        lockScroll();
+                        openShutters()?.eventCallback('onComplete', () => {
+                            playForward();
+                        });
                     }
-
-                    // Scroll to section top to hide navbar, then lock
-                    scrollTweenRef.current = gsap.to(window, {
-                        scrollTo: { y: section.offsetTop, autoKill: true },
-                        duration: 0.3,
-                        ease: "power2.out",
-                        onComplete: () => {
-                            scrollTweenRef.current = null;
-                            lockScroll();
-                            const openTl = openShutters();
-                            if (openTl) {
-                                openTl.eventCallback('onComplete', () => {
-                                    playForward();
-                                });
-                            }
-                        }
-                    });
-                }, 50);
-
+                });
                 return;
             }
 
             // During pinned state
             if (isPinnedRef.current) {
                 e.preventDefault();
-                e.stopPropagation();
 
                 // Scroll up - reverse
                 if (e.deltaY < 0 && !hasCompletedRef.current) {
-                    if (wheelTimeout) clearTimeout(wheelTimeout);
-                    wheelTimeout = setTimeout(() => {
-                        playReverse();
-                    }, 50);
+                    playReverse();
                 }
             }
         };
 
         // Touch handlers
         let touchStartY = 0;
-        let touchTimeout: NodeJS.Timeout | null = null;
 
         const handleTouchStart = (e: TouchEvent) => {
             touchStartY = e.touches[0].clientY;
@@ -300,31 +216,18 @@ export const AboutSection: React.FC = () => {
             // Swipe up - start
             if (deltaY > 30 && isAtSection && !isPinnedRef.current && !hasCompletedRef.current) {
                 e.preventDefault();
+                isPinnedRef.current = true;
+                lockScroll();
 
-                if (touchTimeout) clearTimeout(touchTimeout);
-
-                touchTimeout = setTimeout(() => {
-                    isPinnedRef.current = true;
-                    lockScroll();
-
-                    const openTl = openShutters();
-                    if (openTl) {
-                        openTl.eventCallback('onComplete', () => {
-                            playForward();
-                        });
-                    }
-                }, 50);
+                openShutters()?.eventCallback('onComplete', () => {
+                    playForward();
+                });
             }
 
             // During pinned - swipe down to reverse
             if (isPinnedRef.current && deltaY < -30 && !hasCompletedRef.current) {
                 e.preventDefault();
-
-                if (touchTimeout) clearTimeout(touchTimeout);
-
-                touchTimeout = setTimeout(() => {
-                    playReverse();
-                }, 50);
+                playReverse();
             }
 
             touchStartY = e.touches[0].clientY;
@@ -334,31 +237,12 @@ export const AboutSection: React.FC = () => {
         window.addEventListener('touchstart', handleTouchStart, { passive: true });
         window.addEventListener('touchmove', handleTouchMove, { passive: false });
 
-        // ✅ CLEANUP
         return () => {
             window.removeEventListener('wheel', handleWheel);
             window.removeEventListener('touchstart', handleTouchStart);
             window.removeEventListener('touchmove', handleTouchMove);
             video.removeEventListener('timeupdate', handleTimeUpdate);
-
-            // Clear intervals
-            if (reverseIntervalRef.current) {
-                clearInterval(reverseIntervalRef.current);
-            }
-            if (wheelTimeout) clearTimeout(wheelTimeout);
-            if (touchTimeout) clearTimeout(touchTimeout);
-
-            // Kill scroll tweens
-            if (scrollTweenRef.current) {
-                scrollTweenRef.current.kill();
-            }
-
-            // Unlock scroll
             unlockScroll();
-
-            // Reset video
-            video.pause();
-            video.currentTime = 0;
         };
     }, []);
 
