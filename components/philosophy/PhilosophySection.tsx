@@ -1,11 +1,15 @@
 "use client";
-
-import React, { useLayoutEffect, useRef } from 'react';
+import React, { useEffect, useLayoutEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Plus } from 'lucide-react';
 
-gsap.registerPlugin(ScrollTrigger);
+if (typeof window !== 'undefined') {
+    gsap.registerPlugin(ScrollTrigger);
+}
+
+const useIsomorphicLayoutEffect =
+  typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
 const principles = [
     {
@@ -37,30 +41,38 @@ export const PhilosophySection: React.FC = () => {
     const slidesRef = useRef<(HTMLDivElement | null)[]>([]);
     const progressRef = useRef<HTMLDivElement>(null);
 
-    useLayoutEffect(() => {
+    useIsomorphicLayoutEffect(() => {
+        if (typeof window === 'undefined') return;
+
         const ctx = gsap.context(() => {
             const slides = slidesRef.current.filter(Boolean);
             const totalSlides = slides.length;
 
-            if (totalSlides < 2) return;
+            if (totalSlides < 2 || !trackRef.current || !sectionRef.current) return;
+
+            // Ensure proper width
+            gsap.set(trackRef.current, {
+                width: `${totalSlides * 100}vw`
+            });
 
             // HORIZONTAL SCROLL with VIEWPORT PIN
             const scrollTween = gsap.to(trackRef.current, {
-                xPercent: -(100 * (totalSlides - 1)) / totalSlides,
+                x: () => -(trackRef.current!.scrollWidth - window.innerWidth),
                 ease: "none",
                 scrollTrigger: {
                     trigger: sectionRef.current,
                     start: "top top",
-                    end: `+=${100 * totalSlides}%`,
+                    end: () => `+=${trackRef.current!.scrollWidth - window.innerWidth}`,
                     scrub: 1,
                     pin: true,
+                    anticipatePin: 1,
+                    invalidateOnRefresh: true,
                     snap: {
                         snapTo: 1 / (totalSlides - 1),
                         duration: { min: 0.2, max: 0.5 },
                         ease: "power2.inOut"
                     },
                     onUpdate: (self) => {
-                        // Update progress bar
                         if (progressRef.current) {
                             gsap.set(progressRef.current, { scaleX: self.progress });
                         }
@@ -86,13 +98,16 @@ export const PhilosophySection: React.FC = () => {
                 }
             });
 
+            // Force refresh
+            ScrollTrigger.refresh();
+
         }, sectionRef);
 
         return () => ctx.revert();
     }, []);
 
     return (
-        <section ref={sectionRef} className="relative w-full h-screen bg-[#0a0a0a] text-white overflow-hidden z-20">
+        <section ref={sectionRef} className="relative w-full h-screen bg-[#0a0a0a] text-white z-20">
 
             {/* Background Grid Decor */}
             <div className="absolute inset-0 pointer-events-none opacity-[0.03] z-0 flex justify-center h-full">

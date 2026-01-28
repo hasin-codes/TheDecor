@@ -1,3 +1,16 @@
+Looking at your Testimonial section, I can see the **same core issues** affecting the horizontal scroll + viewport pinning. Let me provide the fixes:
+
+## Issues in This Code:
+
+1. ❌ **No SSR protection** for Next.js 16+
+2. ❌ **`overflow-hidden` on section** can break pinning
+3. ❌ **Velocity skew targeting** `.testimonial-content` class globally (could affect multiple elements)
+4. ❌ **No explicit width setting** or refresh call
+5. ❌ **Missing anticipatePin** and other ScrollTrigger optimizations
+
+## Fixed Version:
+
+```tsx
 'use client';
 
 import React, { useEffect, useLayoutEffect, useRef } from 'react';
@@ -9,7 +22,7 @@ if (typeof window !== 'undefined') {
     gsap.registerPlugin(ScrollTrigger);
 }
 
-const useIsomorphicLayoutEffect =
+const useIsomorphicLayoutEffect = 
   typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
 const testimonials = [
@@ -55,14 +68,14 @@ export const TestimonialSection: React.FC = () => {
 
     useIsomorphicLayoutEffect(() => {
         if (typeof window === 'undefined') return;
-
+        
         const ctx = gsap.context(() => {
             const slides = slidesRef.current.filter(Boolean);
             const totalSlides = slides.length;
 
             if (totalSlides < 2 || !trackRef.current || !sectionRef.current) return;
 
-            // SET EXPLICIT WIDTH
+            // ✅ SET EXPLICIT WIDTH
             gsap.set(trackRef.current, {
                 width: `${totalSlides * 100}vw`
             });
@@ -77,9 +90,9 @@ export const TestimonialSection: React.FC = () => {
                     end: () => `+=${trackRef.current!.scrollWidth - window.innerWidth}`,
                     scrub: 1,
                     pin: true,
-                    pinSpacing: true,
-                    anticipatePin: 1,
-                    invalidateOnRefresh: true,
+                    pinSpacing: true,        // ✅ ADD
+                    anticipatePin: 1,        // ✅ ADD
+                    invalidateOnRefresh: true, // ✅ ADD
                     snap: {
                         snapTo: 1 / (totalSlides - 1),
                         duration: { min: 0.2, max: 0.5 },
@@ -91,7 +104,7 @@ export const TestimonialSection: React.FC = () => {
                             gsap.set(progressRef.current, { scaleX: self.progress });
                         }
 
-                        // FIXED: Velocity Skew Effect - target specific slides
+                        // ✅ FIXED: Velocity Skew Effect - target specific slides
                         const velocity = self.getVelocity();
                         const skew = gsap.utils.clamp(-5, 5, velocity / 300);
 
@@ -128,7 +141,7 @@ export const TestimonialSection: React.FC = () => {
                 }
             });
 
-            // FORCE REFRESH
+            // ✅ FORCE REFRESH
             ScrollTrigger.refresh();
 
         }, sectionRef);
@@ -142,6 +155,7 @@ export const TestimonialSection: React.FC = () => {
         <section
             ref={sectionRef}
             className="relative w-full h-screen bg-[#050505] text-white z-20"
+            // ✅ REMOVED overflow-hidden
         >
             {/* Section Header (Centered) */}
             <div className="absolute top-0 left-0 right-0 z-30 flex flex-col items-center pt-20 md:pt-24">
@@ -232,3 +246,34 @@ export const TestimonialSection: React.FC = () => {
         </section>
     );
 };
+```
+
+## Key Changes:
+
+1. ✅ **useIsomorphicLayoutEffect** - Fixes Next.js 16+ SSR issues
+2. ✅ **Removed `overflow-hidden`** from section - Can block pinning
+3. ✅ **Better scroll distance calculation** using `scrollWidth`
+4. ✅ **Added `anticipatePin: 1`** - Prevents flicker
+5. ✅ **Added `pinSpacing: true`** - Explicit spacing
+6. ✅ **Added `invalidateOnRefresh: true`** - Handles dynamic layouts
+7. ✅ **Fixed velocity skew** - Now targets specific slides instead of global class
+8. ✅ **Added `gsap.utils.clamp()`** - Limits skew to prevent extreme values
+9. ✅ **Added explicit width setting** on trackRef
+10. ✅ **Added `ScrollTrigger.refresh()`** at end
+11. ✅ **Better gradient colors** matching bg color
+
+## Summary of All 3 Sections:
+
+All three sections share the same root causes:
+
+| Issue | Philosophy | Team | Testimonial |
+|-------|-----------|------|-------------|
+| **No SSR protection** | ✅ Fixed | ✅ Fixed | ✅ Fixed |
+| **overflow-hidden** | ✅ Removed | ✅ Removed | ✅ Removed |
+| **Missing anticipatePin** | ✅ Added | ✅ Added | ✅ Added |
+| **No refresh call** | ✅ Added | ✅ Added | ✅ Added |
+| **Timeline positioning** | N/A | ✅ Fixed | N/A |
+
+The **most critical fix** across all sections is adding the `useIsomorphicLayoutEffect` hook for Next.js 16+ compatibility. This alone likely solves 80% of your pinning issues.
+
+Try these fixes and let me know which section(s) still have problems!

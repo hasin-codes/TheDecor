@@ -1,12 +1,17 @@
 'use client';
 
-import React, { useLayoutEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { teamMembers } from '@/lib/data/team';
 import { TeamMemberCard } from '@/components/team';
 
-gsap.registerPlugin(ScrollTrigger);
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+}
+
+const useIsomorphicLayoutEffect =
+  typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
 // --- DATA GENERATION ---
 const groups = [
@@ -57,7 +62,9 @@ export const TeamSection: React.FC = () => {
   const progressRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
-  useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
+    if (typeof window === 'undefined') return;
+
     const ctx = gsap.context(() => {
       if (!sectionRef.current) return;
 
@@ -92,6 +99,8 @@ export const TeamSection: React.FC = () => {
           start: 'top top',
           end: `+=${totalTransitions * 100}%`,
           pin: true,
+          pinSpacing: true,
+          anticipatePin: 1,
           scrub: 0.5,
           snap: {
             snapTo: 1 / totalTransitions,
@@ -100,18 +109,20 @@ export const TeamSection: React.FC = () => {
             ease: 'power2.inOut'
           },
           onUpdate: (self) => {
-            const idx = Math.round(self.progress * totalTransitions);
+            const idx = Math.min(
+              Math.floor(self.progress * (groups.length - 0.01)),
+              groups.length - 1
+            );
             setActiveIndex(idx);
-            // Update progress bar directly based on scroll progress (bypassing scrub lag if desired, or use tl.progress())
+
             if (progressRef.current) {
-              // self.progress is 0-1 based on scroll position (instant)
               gsap.set(progressRef.current, { scaleY: self.progress });
             }
           }
         }
       });
 
-      // --- 3. BUILD TRANSITIONS ---
+      // --- 3. BUILD TRANSITIONS (FIXED POSITIONING) ---
       groups.forEach((_, i) => {
         if (i === groups.length - 1) return;
 
@@ -125,47 +136,65 @@ export const TeamSection: React.FC = () => {
 
         if (!currentGrid || !nextGrid) return;
 
-        // OUTGOING
+        // FIX: Use label strings for timeline position
+        const startLabel = `transition-${i}`;
+
+        // Add label at this position
+        tl.addLabel(startLabel);
+
+        // OUTGOING - use ">" to sequence, or explicit position
         tl.to(currentGrid, {
           yPercent: -120,
           scale: 0.85,
           autoAlpha: 0,
+          zIndex: 1,
           duration: 1,
           ease: 'power3.inOut'
-        }, i);
+        }, startLabel);
 
         tl.to(currentLabel, {
           yPercent: -100,
           autoAlpha: 0,
           duration: 1,
           ease: 'power3.inOut'
-        }, i);
+        }, startLabel);
 
         if (currentStep) {
-          tl.to(currentStep, { width: '0.5rem', backgroundColor: 'rgba(0,0,0,0.1)', duration: 0.5 }, i);
+          tl.to(currentStep, {
+            width: '0.5rem',
+            backgroundColor: 'rgba(0,0,0,0.1)',
+            duration: 0.5
+          }, startLabel);
         }
 
-        // INCOMING
+        // INCOMING - same position to overlap animations
         tl.to(nextGrid, {
           yPercent: 0,
           scale: 1,
           autoAlpha: 1,
+          zIndex: 10,
           duration: 1,
-          ease: 'power3.inOut',
-          zIndex: 10
-        }, i);
+          ease: 'power3.inOut'
+        }, startLabel);
 
         tl.to(nextLabel, {
           yPercent: 0,
           autoAlpha: 1,
           duration: 1,
           ease: 'power3.inOut'
-        }, i);
+        }, startLabel);
 
         if (nextStep) {
-          tl.to(nextStep, { width: '2rem', backgroundColor: '#E31B23', duration: 0.5 }, i);
+          tl.to(nextStep, {
+            width: '2rem',
+            backgroundColor: '#E31B23',
+            duration: 0.5
+          }, startLabel);
         }
       });
+
+      // Force refresh after setup
+      ScrollTrigger.refresh();
 
     }, sectionRef);
 
@@ -175,7 +204,7 @@ export const TeamSection: React.FC = () => {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full h-screen overflow-hidden bg-transparent z-20 -mt-[1px]"
+      className="relative w-full h-screen bg-transparent z-20 -mt-[1px]"
     >
       <div className="w-full h-full max-w-[1600px] mx-auto flex flex-col px-6 md:px-10 lg:px-14 pt-0 md:pt-0">
 
@@ -194,7 +223,6 @@ export const TeamSection: React.FC = () => {
                 key={`label-${i}`}
                 id={`group-label-${i}`}
                 className="absolute inset-0 flex flex-col items-center justify-center text-center"
-                style={{ opacity: i === 0 ? 1 : 0, visibility: i === 0 ? 'visible' : 'hidden' }}
               >
                 <div className="text-2xl md:text-3xl lg:text-4xl font-display font-bold tracking-tight text-foreground uppercase">
                   {group.label}
@@ -209,7 +237,11 @@ export const TeamSection: React.FC = () => {
           {/* Mobile Index Indicator - Centered */}
           <div className="flex md:hidden items-center gap-2 mt-4">
             {groups.map((_, idx) => (
-              <div key={idx} className={`h-1 rounded-full transition-all duration-300 ${idx === 0 ? 'w-8 bg-brandRed' : 'w-2 bg-black/10'}`} id={`mobile-step-${idx}`}></div>
+              <div
+                key={idx}
+                id={`mobile-step-${idx}`}
+                className={`h-1 rounded-full transition-all duration-300 ${idx === 0 ? 'w-8 bg-brandRed' : 'w-2 bg-black/10'}`}
+              />
             ))}
           </div>
 
@@ -217,8 +249,10 @@ export const TeamSection: React.FC = () => {
           <div className="hidden md:flex items-center gap-4 mt-4">
             {groups.map((_, idx) => (
               <div key={idx} className="flex items-center gap-2">
-                <div className={`w-6 h-px transition-colors duration-300 ${idx === 0 ? 'bg-brandRed' : 'bg-current opacity-20'}`}></div>
-                <span className={`text-xs ${idx === 0 ? 'opacity-100 font-bold' : 'opacity-30'}`}>{String(idx + 1).padStart(2, '0')}</span>
+                <div className={`w-6 h-px transition-colors duration-300 ${idx === activeIndex ? 'bg-brandRed' : 'bg-current opacity-20'}`}></div>
+                <span className={`text-xs ${idx === activeIndex ? 'opacity-100 font-bold' : 'opacity-30'}`}>
+                  {String(idx + 1).padStart(2, '0')}
+                </span>
               </div>
             ))}
           </div>
@@ -231,11 +265,6 @@ export const TeamSection: React.FC = () => {
               key={`group-${i}`}
               id={`group-grid-${i}`}
               className="absolute w-full h-full flex items-center justify-center pointer-events-none pb-4 md:pb-8"
-              style={{
-                opacity: i === 0 ? 1 : 0,
-                visibility: i === 0 ? 'visible' : 'hidden',
-                zIndex: i === 0 ? 10 : 1
-              }}
             >
               <div className="w-full h-full grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 pointer-events-auto items-center justify-items-center">
                 {group.members.map((member, idx) => (
