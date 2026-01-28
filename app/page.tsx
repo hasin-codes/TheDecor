@@ -6,7 +6,7 @@ import { ProjectsSection } from "@/components/work";
 import { TeamSection } from "@/components/team";
 import { PhilosophySection } from "@/components/philosophy";
 import { TestimonialSection } from "@/components/testimonials";
-import { GetInTouchSection } from "@/components/getintouch";
+
 import { PageWrapper } from "@/components/PageWrapper";
 
 export default function Home() {
@@ -21,7 +21,7 @@ export default function Home() {
           <TeamSection />
           <ServicesSection />
           <TestimonialSection />
-          <GetInTouchSection />
+
           <Footer />
         </main>
       </div>
