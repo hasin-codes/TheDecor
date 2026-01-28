@@ -1,5 +1,6 @@
 import { Hero } from "@/components/ui";
 import { AboutSection } from "@/components/about";
+import { ServicesSection } from "@/components/services";
 import { Footer } from "@/components/footer";
 import { ProjectsSection } from "@/components/work";
 import { TeamSection } from "@/components/team";
@@ -15,10 +16,10 @@ export default function Home() {
         <main className="w-full">
           <Hero />
           <AboutSection />
-
           <ProjectsSection />
-          <TeamSection />
           <PhilosophySection />
+          <TeamSection />
+          <ServicesSection />
           <TestimonialSection />
           <GetInTouchSection />
           <Footer />

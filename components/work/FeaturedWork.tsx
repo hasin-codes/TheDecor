@@ -94,7 +94,7 @@ export const FeaturedWork: React.FC = () => {
         <div className="flex flex-col items-center text-center pt-16 md:pt-20">
           <div className="flex items-center gap-2 mb-3">
             <div className="w-1.5 h-1.5 rounded-full bg-brandRed animate-pulse" />
-            <span className="font-mono text-[10px] md:text-xs font-bold tracking-widest uppercase opacity-50">
+            <span className="font-mono text-[10px] md:text-xs font-bold tracking-widest uppercase text-[#E31B23]">
               Portfolio
             </span>
           </div>
