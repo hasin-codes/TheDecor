@@ -35,7 +35,7 @@ const ProjectCard: React.FC<ProjectProps> = ({ slug, title, category, image, ind
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={image}
-            alt=""
+            alt={title} // ✅ Add alt text for accessibility
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
         </div>
@@ -46,8 +46,8 @@ const ProjectCard: React.FC<ProjectProps> = ({ slug, title, category, image, ind
         {/* View Indicator - Top Right */}
         <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <div className="flex items-center gap-3">
-            <span className="text-xs font-bold tracking-widest uppercase">View</span>
-            <ArrowUpRight className="w-5 h-5" />
+            <span className="text-xs font-bold tracking-widest uppercase text-white">View</span>
+            <ArrowUpRight className="w-5 h-5 text-white" />
           </div>
         </div>
       </div>
@@ -83,7 +83,12 @@ const ProjectCard: React.FC<ProjectProps> = ({ slug, title, category, image, ind
 
 export const FeaturedWork: React.FC = () => {
   return (
-    <section className="relative z-30 w-full overflow-hidden py-16 md:py-24 bg-[#050505] text-white -mt-[1px]">
+    <section
+      className="relative z-20 w-full py-16 md:py-24 bg-[#050505] text-white"
+    // ✅ Changed z-30 → z-20
+    // ✅ Removed overflow-hidden (can clip glow effects)
+    // ✅ Removed -mt-[1px] (causes layout shifts)
+    >
       {/* Header - Centered */}
       <div className="w-full max-w-[1600px] mx-auto px-6 md:px-10 lg:px-14 mb-16 md:mb-24">
         <div className="flex flex-col items-center text-center pt-16 md:pt-20">
@@ -112,6 +117,16 @@ export const FeaturedWork: React.FC = () => {
               index={i}
             />
           ))}
+        </div>
+      </div>
+
+      {/* ✅ Optional: Background Grid Decoration (matching other sections) */}
+      <div className="absolute inset-0 pointer-events-none z-0 flex justify-center h-full opacity-[0.02]">
+        <div className="w-full max-w-[1440px] flex justify-between h-full px-14">
+          <div className="w-px h-full bg-white"></div>
+          <div className="w-px h-full bg-white hidden md:block"></div>
+          <div className="w-px h-full bg-white hidden md:block"></div>
+          <div className="w-px h-full bg-white"></div>
         </div>
       </div>
     </section>
