@@ -1,6 +1,6 @@
 import { Hero } from "@/components/ui";
 import { AboutSection } from "@/components/about";
-
+import { Footer } from "@/components/footer";
 import { ProjectsSection } from "@/components/work";
 import { TeamSection } from "@/components/team";
 import { PhilosophySection } from "@/components/philosophy";
@@ -21,6 +21,7 @@ export default function Home() {
           <PhilosophySection />
           <TestimonialSection />
           <GetInTouchSection />
+          <Footer />
         </main>
       </div>
     </PageWrapper>
