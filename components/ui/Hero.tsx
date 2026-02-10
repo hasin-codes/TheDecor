@@ -33,7 +33,7 @@ export const Hero: React.FC = () => {
       <motion.div
         animate={{ opacity: [0.05, 0.12, 0.05], scale: [1, 1.1, 1] }}
         transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute -top-20 -left-[20%] w-[50%] h-[60%] bg-[#E31B23] blur-[120px] rounded-full pointer-events-none mix-blend-screen"
+        className="absolute -top-20 -left-[20%] w-[50%] h-[60%] bg-brandRed blur-[120px] rounded-full pointer-events-none mix-blend-screen"
       />
 
       {/* Right Side: Fading Deep Red Aura */}
@@ -44,7 +44,7 @@ export const Hero: React.FC = () => {
       />
 
       {/* Artistic Fluid Line (SVG) - Left */}
-      <svg className="absolute top-20 left-0 w-[400px] h-[800px] opacity-20 pointer-events-none" viewBox="0 0 400 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg className="absolute top-20 left-0 w-100 h-200 opacity-20 pointer-events-none" viewBox="0 0 400 800" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M-50 100C50 150 150 50 250 150C350 250 250 450 150 550C50 650 -50 600 -50 600" stroke="url(#redGradientLeft)" strokeWidth="2" strokeLinecap="round" />
         <defs>
           <linearGradient id="redGradientLeft" x1="0" y1="0" x2="1" y2="1">
@@ -56,7 +56,7 @@ export const Hero: React.FC = () => {
       </svg>
 
       {/* Artistic Fluid Line (SVG) - Right */}
-      <svg className="absolute bottom-32 right-0 w-[500px] h-[600px] opacity-20 pointer-events-none" viewBox="0 0 500 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg className="absolute bottom-32 right-0 w-125 h-150 opacity-20 pointer-events-none" viewBox="0 0 500 600" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M550 100C450 50 350 150 250 100C150 50 100 250 200 450C300 650 550 550 550 550" stroke="url(#redGradientRight)" strokeWidth="1.5" strokeLinecap="round" />
         <defs>
           <linearGradient id="redGradientRight" x1="1" y1="0" x2="0" y2="1">
@@ -84,7 +84,7 @@ export const Hero: React.FC = () => {
         initial={{ scale: 0.98, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-        className="relative w-[92%] md:w-[94%] max-w-[1600px] mx-auto aspect-[3/4] md:aspect-[16/9] lg:aspect-[32/9] lg:min-h-[300px] rounded-[2.5rem] md:rounded-[3.5rem] overflow-hidden z-10 group"
+        className="relative w-[92%] md:w-[94%] max-w-400 mx-auto aspect-3/4 md:aspect-video lg:aspect-32/9 lg:min-h-75 rounded-[2.5rem] md:rounded-[3.5rem] overflow-hidden z-10 group"
         style={{
           background: 'linear-gradient(180deg, #880808 0%, #d70000 35%, #ff4d4d 70%, #ffcccc 100%)',
           boxShadow: '0 20px 80px -20px rgba(227, 27, 35, 0.4), 0 0 0 1px rgba(255,255,255,0.1) inset'
@@ -117,7 +117,7 @@ export const Hero: React.FC = () => {
         />
 
         {/* Internal Shine/Gloss for finish */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-white/20 via-transparent to-black/20 mix-blend-overlay pointer-events-none z-30" />
+        <div className="absolute inset-0 bg-linear-to-tr from-white/20 via-transparent to-black/20 mix-blend-overlay pointer-events-none z-30" />
 
         {/* Ring Border */}
         <div className="absolute inset-0 rounded-[2.5rem] md:rounded-[3.5rem] ring-1 ring-white/20 pointer-events-none z-40" />
