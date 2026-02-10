@@ -1,17 +1,15 @@
 'use client';
 
-import React, { useEffect, useLayoutEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import { Star, ArrowRight, ArrowLeft, ArrowUpRight } from 'lucide-react';
+import { useIsomorphicLayoutEffect } from '@/lib/hooks/useIsomorphicLayoutEffect';
 
 if (typeof window !== 'undefined') {
     gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 }
-
-const useIsomorphicLayoutEffect =
-    typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
 // --- Data Structure with Card Types ---
 type CardType = 'visual' | 'editorial' | 'stat';
@@ -206,13 +204,13 @@ export const TestimonialSection: React.FC = () => {
         >
             {/* --- HEADER UI (Fixed absolute to the pinned section) --- */}
             <div className="absolute top-0 left-0 right-0 w-full px-4 sm:px-6 md:px-10 lg:px-14 pt-24 sm:pt-28 md:pt-32 z-30">
-                <div className="flex flex-col items-center justify-center gap-6 lg:gap-8 w-full max-w-[1440px] mx-auto text-center">
+                <div className="flex flex-col items-center justify-center gap-6 lg:gap-8 w-full max-w-360 mx-auto text-center">
 
                     {/* Title */}
                     <div className="max-w-xl text-center">
                         <div className="flex items-center gap-2 mb-3 justify-center">
                             <div className="w-1.5 h-1.5 rounded-full bg-brandRed animate-pulse" />
-                            <span className="font-mono text-[10px] sm:text-xs font-bold tracking-widest uppercase text-[#E31B23]">
+                            <span className="font-mono text-[10px] sm:text-xs font-bold tracking-widest uppercase text-brandRed">
                                 User Review
                             </span>
                         </div>
@@ -253,17 +251,17 @@ export const TestimonialSection: React.FC = () => {
                 <div ref={trackRef} className="flex items-center gap-3 md:gap-4 pl-4 sm:pl-6 md:pl-10 h-[40vh] sm:h-[45vh] md:h-[55vh] w-max pb-8 sm:pb-12 md:pb-16">
 
                     {testimonials.map((item) => (
-                        <div key={item.id} className="t-card relative h-full flex-shrink-0">
+                        <div key={item.id} className="t-card relative h-full shrink-0">
 
                             {/* TYPE: VISUAL (Image Overlay) */}
                             {item.type === 'visual' && (
-                                <div className="w-[60vw] sm:w-[50vw] md:w-[300px] lg:w-[340px] h-full rounded-xl md:rounded-2xl overflow-hidden relative group">
+                                <div className="w-[60vw] sm:w-[50vw] md:w-75 lg:w-85 h-full rounded-xl md:rounded-2xl overflow-hidden relative group">
                                     <img
                                         src={item.image}
                                         alt={item.client || 'Testimonial'}
                                         className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                     />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
+                                    <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/30 to-transparent"></div>
 
                                     <div className="absolute bottom-0 left-0 w-full p-6 md:p-8 flex flex-col gap-4 md:gap-6 text-white">
                                         <div className="flex gap-1 text-orange-400">
@@ -282,7 +280,7 @@ export const TestimonialSection: React.FC = () => {
 
                             {/* TYPE: EDITORIAL (Text Focus) */}
                             {item.type === 'editorial' && (
-                                <div className="w-[60vw] sm:w-[50vw] md:w-[300px] lg:w-[340px] h-full bg-[#111] rounded-xl md:rounded-2xl p-4 md:p-6 flex flex-col justify-between shadow-sm border border-white/5 group hover:border-white/20 transition-colors">
+                                <div className="w-[60vw] sm:w-[50vw] md:w-75 lg:w-85 h-full bg-[#111] rounded-xl md:rounded-2xl p-4 md:p-6 flex flex-col justify-between shadow-sm border border-white/5 group hover:border-white/20 transition-colors">
                                     <div className="flex gap-1 text-orange-500">
                                         {[1, 2, 3, 4, 5].map(i => <Star key={i} className="w-2.5 h-2.5 md:w-3 md:h-3 fill-current" />)}
                                     </div>
@@ -296,7 +294,7 @@ export const TestimonialSection: React.FC = () => {
                                             <p className="font-display font-bold text-sm md:text-base text-white">{item.author}</p>
                                             <p className="font-mono text-[8px] md:text-[10px] text-white/40 uppercase tracking-wider">{item.role}</p>
                                         </div>
-                                        <div className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-white group-hover:text-black transition-colors flex-shrink-0">
+                                        <div className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-white group-hover:text-black transition-colors shrink-0">
                                             <ArrowRight className="w-3 h-3 md:w-4 md:h-4 -rotate-45" />
                                         </div>
                                     </div>
@@ -305,8 +303,8 @@ export const TestimonialSection: React.FC = () => {
 
                             {/* TYPE: STAT (Bold Box) */}
                             {item.type === 'stat' && (
-                                <div className="w-[60vw] sm:w-[50vw] md:w-[300px] lg:w-[340px] h-full rounded-xl md:rounded-2xl p-4 md:p-6 flex flex-col justify-between text-white relative overflow-hidden group">
-                                    <div className="absolute inset-0 bg-gradient-to-br from-[#880808] via-[#d70000] to-[#ff4d4d]"></div>
+                                <div className="w-[60vw] sm:w-[50vw] md:w-75 lg:w-85 h-full rounded-xl md:rounded-2xl p-4 md:p-6 flex flex-col justify-between text-white relative overflow-hidden group">
+                                    <div className="absolute inset-0 bg-linear-to-br from-[#880808] via-[#d70000] to-[#ff4d4d]"></div>
 
                                     <div className="relative z-10 font-mono text-[10px] md:text-xs uppercase tracking-widest opacity-70 border-b border-white/20 pb-3 md:pb-4">
                                         Facts & Numbers
@@ -330,7 +328,7 @@ export const TestimonialSection: React.FC = () => {
                     ))}
 
                     {/* End Spacer */}
-                    <div className="w-[10vw] md:w-[5vw] flex-shrink-0"></div>
+                    <div className="w-[10vw] md:w-[5vw] shrink-0"></div>
 
                 </div>
             </div>
@@ -344,8 +342,8 @@ export const TestimonialSection: React.FC = () => {
             </div>
 
             {/* Visual Overlays */}
-            <div className="absolute inset-y-0 left-0 w-8 sm:w-16 md:w-32 lg:w-64 bg-gradient-to-r from-[#050505] via-[#050505]/80 to-transparent z-20 pointer-events-none"></div>
-            <div className="absolute inset-y-0 right-0 w-8 sm:w-16 md:w-32 lg:w-64 bg-gradient-to-l from-[#050505] via-[#050505]/80 to-transparent z-20 pointer-events-none"></div>
+            <div className="absolute inset-y-0 left-0 w-8 sm:w-16 md:w-32 lg:w-64 bg-linear-to-r from-[#050505] via-[#050505]/80 to-transparent z-20 pointer-events-none"></div>
+            <div className="absolute inset-y-0 right-0 w-8 sm:w-16 md:w-32 lg:w-64 bg-linear-to-l from-[#050505] via-[#050505]/80 to-transparent z-20 pointer-events-none"></div>
         </section>
     );
 };

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useState, useEffect } from 'react';
-import { motion, useScroll } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Partners } from './Partners';
 
 export const Hero: React.FC = () => {
@@ -22,12 +22,6 @@ export const Hero: React.FC = () => {
     resizeObserver.observe(containerRef.current);
     return () => resizeObserver.disconnect();
   }, []);
-
-  // We keep useScroll in case we want to re-add parallax later
-  useScroll({
-    target: containerRef,
-    offset: ['start end', 'end start'],
-  });
 
   return (
     <section
@@ -79,7 +73,7 @@ export const Hero: React.FC = () => {
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         className="w-full max-w-4xl text-center mb-12 relative z-20"
       >
-        <h2 className="text-4xl md:text-6xl font-medium leading-[1.1] tracking-tight text-foreground drop-shadow-sm font-display">
+        <h2 className="hidden md:block text-4xl md:text-6xl font-medium leading-[1.1] tracking-tight text-foreground drop-shadow-sm font-display">
           We help brands create digital experiences that connect with their audience
         </h2>
       </motion.div>

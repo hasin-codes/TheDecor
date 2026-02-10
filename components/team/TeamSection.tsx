@@ -1,17 +1,15 @@
 'use client';
 
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { teamMembers } from '@/lib/data/team';
 import { TeamMemberCard } from '@/components/team';
+import { useIsomorphicLayoutEffect } from '@/lib/hooks/useIsomorphicLayoutEffect';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
 }
-
-const useIsomorphicLayoutEffect =
-  typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
 // --- DATA GENERATION ---
 const groups = [
@@ -204,9 +202,9 @@ export const TeamSection: React.FC = () => {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full h-screen bg-transparent z-20 -mt-[1px]"
+      className="relative w-full h-screen bg-transparent z-20 -mt-px"
     >
-      <div className="w-full h-full max-w-[1600px] mx-auto flex flex-col px-6 md:px-10 lg:px-14 pt-0 md:pt-0">
+      <div className="w-full h-full max-w-400 mx-auto flex flex-col px-6 md:px-10 lg:px-14 pt-0 md:pt-0">
 
         {/* --- TOP HEADER (Centered) --- */}
         <div className="w-full flex flex-col items-center justify-center relative z-20 shrink-0 pt-20 md:pt-24 pb-6">
@@ -227,7 +225,7 @@ export const TeamSection: React.FC = () => {
                 <div className="text-2xl md:text-3xl lg:text-4xl font-display font-bold tracking-tight text-foreground uppercase">
                   {group.label}
                 </div>
-                <p className="text-[10px] md:text-sm opacity-60 mt-1 max-w-[400px]">
+                <p className="text-[10px] md:text-sm opacity-60 mt-1 max-w-100">
                   {group.description}
                 </p>
               </div>
@@ -269,8 +267,8 @@ export const TeamSection: React.FC = () => {
               <div className="w-full h-full grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 pointer-events-auto items-center justify-items-center">
                 {group.members.map((member, idx) => (
                   <div key={member.id} className="w-full flex justify-center p-0 h-full max-h-[35dvh] md:max-h-none items-center">
-                    <div className="w-full h-full max-w-[200px] md:max-w-[450px] transform origin-center hover:scale-105 transition-transform duration-300 flex items-center relative group">
-                      <div className="absolute inset-0 bg-gradient-to-r from-red-600/20 to-transparent blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-full scale-150 z-0 pointer-events-none"></div>
+                    <div className="w-full h-full max-w-50 md:max-w-112.5 transform origin-center hover:scale-105 transition-transform duration-300 flex items-center relative group">
+                      <div className="absolute inset-0 bg-linear-to-r from-red-600/20 to-transparent blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-full scale-150 z-0 pointer-events-none"></div>
                       <div className="relative z-10 w-full">
                         <TeamMemberCard member={member} index={idx} />
                       </div>
@@ -285,13 +283,13 @@ export const TeamSection: React.FC = () => {
       </div>
 
       {/* Vertical Progress Bar */}
-      <div className="absolute left-6 md:left-10 top-1/2 -translate-y-1/2 h-[200px] w-0.5 bg-black/10 hidden md:block">
+      <div className="absolute left-6 md:left-10 top-1/2 -translate-y-1/2 h-50 w-0.5 bg-black/10 hidden md:block">
         <div ref={progressRef} className="w-full h-full bg-brandRed origin-top"></div>
       </div>
 
       {/* Background Decor */}
       <div className="absolute inset-0 pointer-events-none z-0 flex justify-center h-full">
-        <div className="w-full max-w-[1440px] flex justify-end h-full opacity-[0.03] px-14">
+        <div className="w-full max-w-360 flex justify-end h-full opacity-[0.03] px-14">
           <div className="w-px h-full bg-black dark:bg-white mr-[18%]"></div>
           <div className="w-px h-full bg-black dark:bg-white mr-[18%]"></div>
           <div className="w-px h-full bg-black dark:bg-white mr-[18%]"></div>

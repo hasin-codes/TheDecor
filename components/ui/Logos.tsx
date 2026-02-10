@@ -51,14 +51,14 @@ export const HubLogo = () => (
 // ------------------------------------------------------------------
 export const CompanyLogos = [
   // 1. AETHER
-  <LogoBase key="1">
+  <LogoBase key="aether">
     <svg viewBox="0 0 100 40" className="w-full h-full">
       <path d="M20 10 L25 30 L30 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
       <text x="40" y="26" fontSize="16" fontFamily="sans-serif" fontWeight="bold" fill="currentColor">AETHER</text>
     </svg>
   </LogoBase>,
   // 2. NEXUS
-  <LogoBase key="2">
+  <LogoBase key="nexus">
     <svg viewBox="0 0 100 40" className="w-full h-full">
       <circle cx="20" cy="20" r="8" stroke="currentColor" strokeWidth="2" fill="none"/>
       <path d="M20 12 L20 28" stroke="currentColor" strokeWidth="2"/>
@@ -67,7 +67,7 @@ export const CompanyLogos = [
     </svg>
   </LogoBase>,
   // 3. ORBIT
-  <LogoBase key="3">
+  <LogoBase key="orbit">
     <svg viewBox="0 0 100 40" className="w-full h-full">
       <ellipse cx="20" cy="20" rx="10" ry="5" stroke="currentColor" strokeWidth="2" fill="none" transform="rotate(-45 20 20)"/>
       <circle cx="20" cy="20" r="3" fill="currentColor"/>
@@ -75,14 +75,14 @@ export const CompanyLogos = [
     </svg>
   </LogoBase>,
   // 4. PRISM
-  <LogoBase key="4">
+  <LogoBase key="prism">
     <svg viewBox="0 0 100 40" className="w-full h-full">
       <path d="M20 10 L12 25 H28 Z" stroke="currentColor" strokeWidth="2" fill="none"/>
       <text x="40" y="26" fontSize="16" fontFamily="sans-serif" fontWeight="bold" fill="currentColor">PRISM</text>
     </svg>
   </LogoBase>,
   // 5. CORE
-  <LogoBase key="5">
+  <LogoBase key="core">
     <svg viewBox="0 0 100 40" className="w-full h-full">
       <rect x="12" y="12" width="16" height="16" rx="4" stroke="currentColor" strokeWidth="2" fill="none"/>
       <path d="M20 20 L28 28" stroke="currentColor" strokeWidth="2"/>
@@ -90,14 +90,14 @@ export const CompanyLogos = [
     </svg>
   </LogoBase>,
   // 6. WAVE
-  <LogoBase key="6">
+  <LogoBase key="wave">
     <svg viewBox="0 0 100 40" className="w-full h-full">
       <path d="M10 20 Q20 5 30 20 T50 20" stroke="currentColor" strokeWidth="2" fill="none"/>
       <text x="60" y="26" fontSize="16" fontFamily="sans-serif" fontWeight="bold" fill="currentColor">WAVE</text>
     </svg>
   </LogoBase>,
   // 7. VERTEX
-  <LogoBase key="7">
+  <LogoBase key="vertex">
     <svg viewBox="0 0 100 40" className="w-full h-full">
       <path d="M15 25 L20 15 L25 25" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" fill="none"/>
       <path d="M10 20 L30 20" stroke="currentColor" strokeWidth="1"/>
@@ -105,7 +105,7 @@ export const CompanyLogos = [
     </svg>
   </LogoBase>,
   // 8. VAULT
-  <LogoBase key="8">
+  <LogoBase key="vault">
     <svg viewBox="0 0 100 40" className="w-full h-full">
       <rect x="12" y="14" width="16" height="12" stroke="currentColor" strokeWidth="2" fill="none"/>
       <path d="M16 14 V10 C16 8 24 8 24 10 V14" stroke="currentColor" strokeWidth="2" fill="none"/>
@@ -113,14 +113,14 @@ export const CompanyLogos = [
     </svg>
   </LogoBase>,
   // 9. ZENITH
-  <LogoBase key="9">
+  <LogoBase key="zenith">
     <svg viewBox="0 0 100 40" className="w-full h-full">
       <path d="M15 30 L20 10 L25 30" stroke="currentColor" strokeWidth="2" fill="none"/>
       <text x="40" y="26" fontSize="16" fontFamily="sans-serif" fontWeight="bold" fill="currentColor">ZENITH</text>
     </svg>
   </LogoBase>,
   // 10. FLUX
-  <LogoBase key="10">
+  <LogoBase key="flux">
     <svg viewBox="0 0 100 40" className="w-full h-full">
       <circle cx="15" cy="20" r="5" stroke="currentColor" strokeWidth="2" fill="none"/>
       <circle cx="25" cy="20" r="5" stroke="currentColor" strokeWidth="2" fill="none"/>

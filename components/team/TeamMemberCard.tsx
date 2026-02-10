@@ -68,16 +68,16 @@ const GradientHeader: React.FC = () => {
   return (
     <div className="w-full h-full relative">
       {/* Mesh Gradient Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#ff3333] via-[#ff6b6b] to-[#ffcc00]">
+      <div className="absolute inset-0 bg-linear-to-br from-[#ff3333] via-[#ff6b6b] to-[#ffcc00]">
         {/* Overlay gradients to create the specific 'blobs' seen in the reference */}
-        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-white/10 to-transparent mix-blend-overlay"></div>
+        <div className="absolute top-0 left-0 w-full h-full bg-linear-to-b from-white/10 to-transparent mix-blend-overlay"></div>
         <div className="absolute -top-10 -right-10 w-40 h-40 bg-pink-400 rounded-full blur-3xl opacity-60"></div>
         <div className="absolute bottom-0 left-10 w-32 h-32 bg-blue-600 rounded-full blur-2xl opacity-50 mix-blend-multiply"></div>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-purple-500 rounded-full blur-3xl opacity-40"></div>
       </div>
 
       {/* Brand Text - Rotated */}
-      <div className="absolute top-0 left-0 h-full flex flex-col justify-end pb-6 pl-[14px]">
+      <div className="absolute top-0 left-0 h-full flex flex-col justify-end pb-6 pl-3.5">
         <h1
           className="text-white text-[clamp(1.5rem,6vw,2.5rem)] font-display font-medium tracking-wide origin-bottom-left -rotate-90"
           style={{ textShadow: '0 2px 10px rgba(0,0,0,0.1)' }}
@@ -130,7 +130,7 @@ const GridContent: React.FC<GridContentProps> = ({ member }) => {
         {/* Title & Address Row */}
         <div className="flex justify-between items-end">
           <div className="text-white/80 text-[clamp(0.45rem,1.4vw,0.65rem)] font-mono font-normal tracking-wide uppercase opacity-90 max-w-[60%]">
-            <span className="text-brandBlue opacity-60 block text-[clamp(0.35rem,1vw,0.5rem)] mb-0.5">POSITION_ID /</span>
+            <span className="text-brandRed opacity-60 block text-[clamp(0.35rem,1vw,0.5rem)] mb-0.5">POSITION_ID /</span>
             {member.role}<br />
             {member.sector}
           </div>
@@ -163,10 +163,10 @@ const GridContent: React.FC<GridContentProps> = ({ member }) => {
 export const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member }) => {
   return (
     // Outer CONTAINER: Controls size and perspective
-    <div className="group [perspective:1000px] w-full aspect-[17/26] max-w-[400px] mx-auto">
+    <div className="group perspective-[1000px] w-full aspect-17/26 max-w-100 mx-auto">
 
       {/* INNER CONTAINER: The flipper */}
-      <div className="relative w-full h-full transition-all duration-700 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)] shadow-2xl rounded-3xl">
+      <div className="relative w-full h-full transition-all duration-700 transform-3d group-hover:transform-[rotateY(180deg)] shadow-2xl rounded-3xl">
 
         {/* --- FRONT FACE --- */}
         <div
@@ -178,7 +178,10 @@ export const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member }) => {
           }}
         >
           {/* Noise Texture Overlay */}
-          <div className="absolute inset-0 bg-noise opacity-50 pointer-events-none z-50 mix-blend-overlay"></div>
+          <div
+            className="absolute inset-0 opacity-50 pointer-events-none z-50 mix-blend-overlay"
+            style={{ backgroundImage: "url('https://grainy-gradients.vercel.app/noise.svg')" }}
+          ></div>
 
           {/* Top Section: Header & Image */}
           <div className="w-full flex-1 flex flex-col relative p-[4%] pt-[10%] pb-0 h-[65%]">
@@ -186,9 +189,9 @@ export const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member }) => {
             {/* Header - Company & Logo */}
             <div className="flex justify-between items-center mb-[4%] z-20 px-[1%]">
               <h1 className="text-white text-[clamp(0.9rem,3.5vw,1.5rem)] tracking-tighter font-medium flex items-baseline font-sans leading-none uppercase">
-                Decor&apos;s<span className="text-brandBlue">.</span>digital
+                Decor&apos;s<span className="text-brandRed">.</span>digital
               </h1>
-              <div className="w-[12%] min-w-[28px] max-w-[40px] aspect-square rounded flex items-center justify-center p-1">
+              <div className="w-[12%] min-w-7 max-w-10 aspect-square rounded flex items-center justify-center p-1">
                 <img src="/logo.png" alt="Logo" className="w-full h-full object-contain brightness-0 invert opacity-90" />
               </div>
             </div>
@@ -201,7 +204,7 @@ export const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member }) => {
               </div>
 
               {/* User Image Square - Increased Height to touch bottom info */}
-              <div className="relative z-10 w-[85%] aspect-[9/13] bg-zinc-900 rounded-t-sm shadow-[0_30px_60px_-12px_rgba(0,0,0,0.8)] border-x border-t border-zinc-700/50 group overflow-hidden -mb-1">
+              <div className="relative z-10 w-[85%] aspect-9/13 bg-zinc-900 rounded-t-sm shadow-[0_30px_60px_-12px_rgba(0,0,0,0.8)] border-x border-t border-zinc-700/50 group overflow-hidden -mb-1">
                 {/* Image Filter: Grayscale + Contrast */}
                 <img
                   src={member.image}
@@ -210,15 +213,15 @@ export const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member }) => {
                 />
 
                 {/* Tech overlay effects */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-red-500/20 to-transparent mix-blend-overlay"></div>
+                <div className="absolute inset-0 bg-linear-to-tr from-red-500/20 to-transparent mix-blend-overlay"></div>
 
                 {/* Red Light Leak Effect - Thin & Sharp */}
                 <div className="absolute top-1/2 -right-5 -translate-y-1/2 w-10 h-64 bg-red-500 blur-[15px] rounded-full mix-blend-screen pointer-events-none z-20"></div>
-                <div className="absolute top-[40%] -right-16 w-80 h-4 bg-red-500 blur-[10px] -rotate-[35deg] mix-blend-screen pointer-events-none z-20"></div>
+                <div className="absolute top-[40%] -right-16 w-80 h-4 bg-red-500 blur-[10px] -rotate-35 mix-blend-screen pointer-events-none z-20"></div>
 
                 {/* Corners - Aspect preserved */}
-                <div className="absolute top-0 left-0 w-[3%] min-w-[6px] aspect-square border-t-2 border-l-2 border-white/40"></div>
-                <div className="absolute bottom-0 right-0 w-[3%] min-w-[6px] aspect-square border-b-2 border-r-2 border-white/40"></div>
+                <div className="absolute top-0 left-0 w-[3%] min-w-1.5 aspect-square border-t-2 border-l-2 border-white/40"></div>
+                <div className="absolute bottom-0 right-0 w-[3%] min-w-1.5 aspect-square border-b-2 border-r-2 border-white/40"></div>
               </div>
             </div>
           </div>
@@ -230,7 +233,7 @@ export const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member }) => {
               name={member.name}
               sector={String(member.sector)}
               material={member.material}
-              baseUnit={String(member.baseUnit)}
+              baseUnit={member.baseUnit}
             />
           </div>
 
@@ -252,7 +255,7 @@ export const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member }) => {
 
           {/* Top Gradient Section with Inset Gap */}
           <div className="h-[38%] w-full p-2.5 pb-1.5">
-            <div className="w-full h-full rounded-[1.5rem] overflow-hidden relative border border-white/5 shadow-inner ring-1 ring-white/5">
+            <div className="w-full h-full rounded-3xl overflow-hidden relative border border-white/5 shadow-inner ring-1 ring-white/5">
               <GradientHeader />
             </div>
           </div>

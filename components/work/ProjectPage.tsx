@@ -69,11 +69,11 @@ export const ProjectPage: React.FC<ProjectPageProps> = ({ project, nextProject }
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-      className="fixed inset-0 z-[100] bg-background w-full h-full overflow-hidden"
+      className="fixed inset-0 z-100 bg-background w-full h-full overflow-hidden"
     >
       {/* --- CUSTOM HEADER --- */}
       <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-6 md:px-10 md:py-8 lg:px-14 pointer-events-none mix-blend-difference text-white transition-opacity duration-300">
-        <div className="flex-shrink-0 pointer-events-auto">
+        <div className="shrink-0 pointer-events-auto">
           <h1 className="font-sans text-2xl font-bold tracking-tight uppercase">
             Decor
           </h1>
@@ -128,7 +128,7 @@ export const ProjectPage: React.FC<ProjectPageProps> = ({ project, nextProject }
       </div>
 
       {/* --- PROGRESS BAR --- */}
-      <div className="fixed bottom-0 left-0 w-full h-1 bg-white/10 z-[60]">
+      <div className="fixed bottom-0 left-0 w-full h-1 bg-white/10 z-60">
         <motion.div
           className="h-full bg-[#FF4D00]"
           style={{ scaleX, transformOrigin: "0%" }}
@@ -140,16 +140,16 @@ export const ProjectPage: React.FC<ProjectPageProps> = ({ project, nextProject }
         ref={containerRef}
         onScroll={handleScroll}
         className="w-full h-full flex flex-nowrap overflow-x-auto overflow-y-hidden hide-scrollbar snap-x snap-mandatory"
-        style={{ scrollBehavior: 'smooth' }}
+        style={{}}
       >
 
         {/* --- SLIDE 1: HERO TEXT --- */}
         <div
-          className="w-screen h-full flex-shrink-0 snap-start flex items-center relative"
+          className="w-screen h-full shrink-0 snap-start flex items-center relative"
           style={{ backgroundColor: project.accentColor }}
         >
           {/* Text Content Grid */}
-          <div className="w-full h-full max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 px-6 md:px-14 pt-32 pb-24 box-border">
+          <div className="w-full h-full max-w-400 mx-auto grid grid-cols-1 lg:grid-cols-12 px-6 md:px-14 pt-32 pb-24 box-border">
 
             {/* Left: Main Title & Description */}
             <div className="lg:col-span-7 flex flex-col justify-center gap-12 lg:pr-20">
@@ -221,7 +221,7 @@ export const ProjectPage: React.FC<ProjectPageProps> = ({ project, nextProject }
         {project.slides?.map((slide, index) => (
           <div
             key={index}
-            className={`w-screen h-full flex-shrink-0 snap-start flex items-center justify-center bg-black overflow-hidden relative
+            className={`w-screen h-full shrink-0 snap-start flex items-center justify-center bg-black overflow-hidden relative
               ${slide.type.includes('padded') ? 'p-6 md:p-14 lg:p-20' : ''}
             `}
           >
@@ -259,7 +259,7 @@ export const ProjectPage: React.FC<ProjectPageProps> = ({ project, nextProject }
 
         {/* --- FOOTER / NEXT PROJECT SLIDE --- */}
         {nextProject && (
-          <div className="w-screen h-full flex-shrink-0 snap-start flex relative bg-[#F0F1F7]">
+          <div className="w-screen h-full shrink-0 snap-start flex relative bg-[#F0F1F7]">
             {/* Split Screen Logic */}
             <div className="hidden lg:block w-1/2 h-full relative overflow-hidden">
               {/* eslint-disable-next-line @next/next/no-img-element */}

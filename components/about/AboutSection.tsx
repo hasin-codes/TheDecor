@@ -10,8 +10,6 @@ gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
 export const AboutSection: React.FC = () => {
     const sectionRef = useRef<HTMLDivElement>(null);
-    const stickyRef = useRef<HTMLDivElement>(null);
-    const pinWrapperRef = useRef<HTMLDivElement>(null);
 
     // Elements
     const leftPanelRef = useRef<HTMLDivElement>(null);
@@ -21,7 +19,6 @@ export const AboutSection: React.FC = () => {
     // Text Elements
     const leftContentRef = useRef<HTMLDivElement>(null);
     const rightContentRef = useRef<HTMLDivElement>(null);
-    const overlayTextRef = useRef<HTMLDivElement>(null);
 
     // State refs
     const isPlayingRef = useRef(false);
@@ -29,6 +26,11 @@ export const AboutSection: React.FC = () => {
     const isPinnedRef = useRef(false);
     const hasCompletedRef = useRef(false);
     const shuttersOpenRef = useRef(false);
+
+    // Cleanup refs - for memory leak prevention
+    const reverseIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const shutterTimelineRef = useRef<gsap.core.Timeline | null>(null);
+    const scrollAnimationRef = useRef<gsap.core.Tween | null>(null);
 
     useEffect(() => {
         if (!sectionRef.current || !videoRef.current) return;
@@ -52,7 +54,12 @@ export const AboutSection: React.FC = () => {
             if (shuttersOpenRef.current) return;
             shuttersOpenRef.current = true;
 
+            // Kill any existing timeline
+            shutterTimelineRef.current?.kill();
+
             const tl = gsap.timeline();
+            shutterTimelineRef.current = tl;
+
             tl.to(leftPanelRef.current, { xPercent: -100, duration: 1, ease: "power2.inOut" }, 0);
             tl.to(rightPanelRef.current, { xPercent: 100, duration: 1, ease: "power2.inOut" }, 0);
 
@@ -82,7 +89,12 @@ export const AboutSection: React.FC = () => {
             if (!shuttersOpenRef.current) return;
             shuttersOpenRef.current = false;
 
+            // Kill any existing timeline
+            shutterTimelineRef.current?.kill();
+
             const tl = gsap.timeline();
+            shutterTimelineRef.current = tl;
+
             tl.to(leftPanelRef.current, { xPercent: 0, duration: 0.8, ease: "power2.inOut" }, 0);
             tl.to(rightPanelRef.current, { xPercent: 0, duration: 0.8, ease: "power2.inOut" }, 0);
 
@@ -112,9 +124,17 @@ export const AboutSection: React.FC = () => {
             isPlayingRef.current = false;
             video.pause();
 
-            const reverseInterval = setInterval(() => {
+            // Clear any existing interval
+            if (reverseIntervalRef.current) {
+                clearInterval(reverseIntervalRef.current);
+            }
+
+            reverseIntervalRef.current = setInterval(() => {
                 if (video.currentTime <= 0.1) {
-                    clearInterval(reverseInterval);
+                    if (reverseIntervalRef.current) {
+                        clearInterval(reverseIntervalRef.current);
+                        reverseIntervalRef.current = null;
+                    }
                     video.currentTime = 0;
                     isReversingRef.current = false;
 
@@ -125,7 +145,8 @@ export const AboutSection: React.FC = () => {
                         unlockScroll();
 
                         // Scroll back to section start
-                        gsap.to(window, {
+                        scrollAnimationRef.current?.kill();
+                        scrollAnimationRef.current = gsap.to(window, {
                             scrollTo: { y: section.offsetTop, autoKill: false },
                             duration: 0.5,
                             ease: "power2.out"
@@ -150,7 +171,8 @@ export const AboutSection: React.FC = () => {
 
                 const nextSection = section.nextElementSibling as HTMLElement;
                 if (nextSection) {
-                    gsap.to(window, {
+                    scrollAnimationRef.current?.kill();
+                    scrollAnimationRef.current = gsap.to(window, {
                         scrollTo: { y: nextSection.offsetTop, autoKill: false },
                         duration: 1.2,
                         ease: "power2.inOut"
@@ -174,7 +196,8 @@ export const AboutSection: React.FC = () => {
                 isPinnedRef.current = true;
 
                 // Scroll to section top to hide navbar, then lock
-                gsap.to(window, {
+                scrollAnimationRef.current?.kill();
+                scrollAnimationRef.current = gsap.to(window, {
                     scrollTo: { y: section.offsetTop, autoKill: false },
                     duration: 0.3,
                     ease: "power2.out",
@@ -238,18 +261,31 @@ export const AboutSection: React.FC = () => {
         window.addEventListener('touchmove', handleTouchMove, { passive: false });
 
         return () => {
+            // Remove event listeners
             window.removeEventListener('wheel', handleWheel);
             window.removeEventListener('touchstart', handleTouchStart);
             window.removeEventListener('touchmove', handleTouchMove);
             video.removeEventListener('timeupdate', handleTimeUpdate);
+
+            // Clear interval if running
+            if (reverseIntervalRef.current) {
+                clearInterval(reverseIntervalRef.current);
+                reverseIntervalRef.current = null;
+            }
+
+            // Kill GSAP animations
+            shutterTimelineRef.current?.kill();
+            scrollAnimationRef.current?.kill();
+
+            // Unlock scroll
             unlockScroll();
         };
     }, []);
 
     return (
         <section ref={sectionRef} className="relative w-full h-screen z-20">
-            <div ref={pinWrapperRef} className="relative w-full h-screen">
-                <div ref={stickyRef} className="relative w-full h-screen overflow-hidden">
+            <div className="relative w-full h-screen">
+                <div className="relative w-full h-screen overflow-hidden">
 
                     {/* --- VIDEO LAYER --- */}
                     <div className="absolute inset-0 z-0 bg-background flex items-center justify-center">
@@ -286,26 +322,26 @@ export const AboutSection: React.FC = () => {
                     {/* --- LEFT SHUTTER --- */}
                     <div
                         ref={leftPanelRef}
-                        className="absolute top-0 left-0 w-[50%] h-full bg-background z-10 border-r border-foreground/5 flex flex-col justify-center px-6 md:px-12 lg:pl-20 overflow-hidden will-change-transform"
+                        className="absolute top-0 left-0 w-full md:w-[50%] h-full bg-background z-10 md:border-r border-foreground/5 flex flex-col justify-center items-center md:items-start px-6 md:px-12 lg:pl-20 overflow-hidden will-change-transform"
                     >
-                        <div ref={leftContentRef} className="flex flex-col gap-6 max-w-lg origin-right will-change-transform">
-                            <div className="flex items-center gap-3 mb-4">
+                        <div ref={leftContentRef} className="flex flex-col gap-6 max-w-lg origin-right will-change-transform text-center md:text-left">
+                            <div className="flex items-center gap-3 mb-4 justify-center md:justify-start">
                                 <div className="w-2 h-2 bg-brandRed rounded-full animate-pulse" />
                                 <span className="font-mono text-xs font-bold tracking-widest text-brandRed uppercase">[ System.Init ]</span>
                             </div>
 
                             <h2 className="font-display text-4xl md:text-6xl font-bold leading-[0.9] text-foreground tracking-tighter uppercase">
-                                Breach<br />The<br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-brandRed to-foreground">Norm</span>
+                                Breach<br />The<br /><span className="text-transparent bg-clip-text bg-linear-to-r from-brandRed to-foreground">Norm</span>
                             </h2>
 
-                            <div className="w-12 h-1 bg-brandRed mt-2" />
+                            <div className="w-12 h-1 bg-brandRed mt-2 mx-auto md:mx-0" />
 
-                            <p className="font-sans text-lg md:text-xl font-medium text-foreground/70 leading-relaxed mt-4">
+                            <p className="font-sans text-base md:text-xl font-medium text-foreground/70 leading-relaxed mt-4">
                                 We dismantle the barrier between digital function and artistic expression.
                             </p>
                         </div>
 
-                        <div className="absolute bottom-10 left-10 md:left-20 font-mono text-xs text-foreground/30">
+                        <div className="absolute bottom-10 left-10 md:left-20 font-mono text-xs text-foreground/30 hidden md:block">
                             COORD: 34.0522° N, 118.2437° W
                         </div>
                     </div>
@@ -313,14 +349,14 @@ export const AboutSection: React.FC = () => {
                     {/* --- RIGHT SHUTTER --- */}
                     <div
                         ref={rightPanelRef}
-                        className="absolute top-0 right-0 w-[50%] h-full bg-background z-10 border-l border-foreground/5 flex flex-col justify-center px-6 md:px-12 lg:pr-20 items-end text-right overflow-hidden will-change-transform"
+                        className="absolute top-0 right-0 w-[50%] h-full bg-background z-10 border-l border-foreground/5 flex-col justify-center px-6 md:px-12 lg:pr-20 items-end text-right overflow-hidden will-change-transform hidden md:flex"
                     >
                         <div ref={rightContentRef} className="flex flex-col gap-6 max-w-lg origin-left items-end will-change-transform">
                             <span className="font-mono text-xs font-bold tracking-widest text-brandRed/60 uppercase mb-4 border border-brandRed/20 px-3 py-1 rounded-full">
                                 Est. 2024 — Future
                             </span>
 
-                            <p className="font-display text-sm md:text-base font-bold tracking-widest leading-loose text-foreground uppercase max-w-[200px]">
+                            <p className="font-display text-sm md:text-base font-bold tracking-widest leading-loose text-foreground uppercase max-w-50">
                                 Decor is an advanced digital production studio based in the UK.
                             </p>
 
@@ -349,7 +385,6 @@ export const AboutSection: React.FC = () => {
 
                     {/* --- OVERLAY --- */}
                     <div
-                        ref={overlayTextRef}
                         className="absolute inset-0 z-30 flex flex-col items-center justify-center pointer-events-none overflow-hidden"
                     >
                         <div id="about-reactor-target" className="absolute top-1/2 left-1/2 w-1 h-1" />

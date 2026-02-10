@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { Activity } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface HeaderProps {

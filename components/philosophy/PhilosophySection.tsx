@@ -1,16 +1,14 @@
 'use client';
 
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { motion } from 'framer-motion';
+import { useIsomorphicLayoutEffect } from '@/lib/hooks/useIsomorphicLayoutEffect';
 
 if (typeof window !== 'undefined') {
     gsap.registerPlugin(ScrollTrigger);
 }
-
-const useIsomorphicLayoutEffect =
-    typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
 const principles = [
     {
@@ -124,11 +122,11 @@ export const PhilosophySection: React.FC = () => {
             {/* --- Background Elements --- */}
             <div className="absolute inset-0 z-0 pointer-events-none">
                 {/* ✅ 1. Tech Grid - Removed mask-image ellipse */}
-                <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f1a_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f1a_1px,transparent_1px)] bg-[size:4rem_4rem] opacity-50" />
+                <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f1a_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f1a_1px,transparent_1px)] bg-size-[4rem_4rem] opacity-50" />
 
                 {/* ✅ 2. Ambient Glows */}
-                <div className="philo-bg-shape absolute top-[-10%] left-[20%] w-[500px] h-[500px] bg-red-600/10 blur-[120px] rounded-full mix-blend-screen" />
-                <div className="philo-bg-shape absolute bottom-[-10%] right-[10%] w-[600px] h-[600px] bg-red-600/10 blur-[100px] rounded-full mix-blend-screen" />
+                <div className="philo-bg-shape absolute top-[-10%] left-[20%] w-125 h-125 bg-red-600/10 blur-[120px] rounded-full mix-blend-screen" />
+                <div className="philo-bg-shape absolute bottom-[-10%] right-[10%] w-150 h-150 bg-red-600/10 blur-[100px] rounded-full mix-blend-screen" />
 
                 {/* ✅ 3. Floating Particles (Static visual for texture) */}
                 <div className="absolute top-1/3 left-10 w-2 h-2 bg-red-500/30 rounded-full animate-pulse" />
@@ -137,7 +135,7 @@ export const PhilosophySection: React.FC = () => {
 
             </div>
 
-            <div className="relative w-full h-full max-w-[1440px] mx-auto flex flex-col justify-center z-10">
+            <div className="relative w-full h-full max-w-360 mx-auto flex flex-col justify-center z-10">
 
                 {/* Section Header */}
                 <div className="absolute top-24 sm:top-28 md:top-32 lg:top-40 left-0 w-full px-4 sm:px-6 md:px-14 text-center z-20">
@@ -195,8 +193,8 @@ export const PhilosophySection: React.FC = () => {
                                 id={`philo-node-${i + 1}`}
                                 ref={el => { cardsRef.current[i] = el; }}
                                 className={`
-                                relative z-10 w-full md:w-[220px] lg:w-[240px]
-                                flex flex-col gap-3 md:gap-3 p-4 md:p-4 rounded-2xl md:rounded-[1.5rem]
+                                relative z-10 w-full md:w-55 lg:w-60
+                                flex flex-col gap-3 md:gap-3 p-4 md:p-4 rounded-2xl md:rounded-3xl
                                 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]
                                 border backdrop-blur-md
                                 ${item.align}
